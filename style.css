@@ -7,8 +7,11 @@
 }
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;font-family:Inter,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#071026,#07121a);color:var(--text);display:flex;align-items:center;justify-content:center;padding:18px}
-main{max-width:720px;width:100%;background:rgba(255,255,255,0.02);padding:18px;border-radius:12px;box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+/* Use column flow and top alignment so pages can grow and scroll on mobile.
+  Add safe-area bottom padding for phones with navigation bars. */
+body{margin:0;font-family:Inter,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#071026,#07121a);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;min-height:100vh;padding:18px 18px calc(18px + env(safe-area-inset-bottom, 0px))}
+/* allow main to flow normally and keep spacing so bottom content isn't clipped */
+main{max-width:720px;width:100%;background:rgba(255,255,255,0.02);padding:18px;border-radius:12px;box-shadow:0 6px 30px rgba(2,6,23,0.6);margin:18px 0}
 h1{margin:0 0 6px;font-size:20px}
 .subtitle{margin:0 0 12px;color:#9fb3c7;font-size:13px}
 #message{font-weight:600}
@@ -35,6 +38,10 @@ h1{margin:0 0 6px;font-size:20px}
 .note{font-size:13px;color:#9fb3c7}
 .tx-input{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text);margin-top:6px;font-size:15px}
 
+/* Make modal content scrollable and respect safe-area insets so submit
+  buttons and inputs are reachable on small phones and under browser UI. */
+.modal-content{max-height:calc(100vh - 48px);overflow:auto;padding-bottom:calc(16px + env(safe-area-inset-bottom, 0px))}
+
 @media (max-width:640px){
   .modal-content{max-width:420px;padding:14px}
   .qr-wrap{flex-direction:column;gap:12px}
@@ -43,6 +50,7 @@ h1{margin:0 0 6px;font-size:20px}
 }
 .hint{margin:6px 0 0;color:#9fb3c7;font-size:13px}
 .redeem{margin-top:12px}
+.redeem{padding-bottom:calc(12px + env(safe-area-inset-bottom, 0px))}
 .redeem input{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text);margin-right:8px;font-size:15px}
 .history{margin-top:8px}
 .small{font-size:12px;padding:6px 8px}

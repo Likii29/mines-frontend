@@ -370,3 +370,40 @@ document.addEventListener("visibilitychange", () => {
 // AUTO SHOW AREA IF LOGGED IN
 // =========================================================
 if (currentUser()) showPlayerArea();
+
+// --- Small UX helpers (non-scrolling): modal close handlers, backdrop click, Escape key, and Copy UPI ---
+try{
+  if (qrClose) qrClose.addEventListener('click', () => { qrModal.setAttribute('aria-hidden', 'true'); modalTxid.value = ''; });
+  if (modalCancel) modalCancel.addEventListener('click', () => { qrModal.setAttribute('aria-hidden', 'true'); modalTxid.value = ''; });
+
+  // Close when tapping outside modal content
+  if (qrModal) qrModal.addEventListener('click', (e) => { if (e.target === qrModal) { qrModal.setAttribute('aria-hidden', 'true'); modalTxid.value = ''; } });
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && qrModal.getAttribute('aria-hidden') === 'false') {
+      qrModal.setAttribute('aria-hidden', 'true');
+      modalTxid.value = '';
+    }
+  });
+
+  // Copy UPI to clipboard (with fallback)
+  if (copyUpiBtn) copyUpiBtn.addEventListener('click', async () => {
+    const text = upiIdEl ? upiIdEl.textContent.trim() : '';
+    if (!text) return alert('No UPI ID available to copy');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      try { await navigator.clipboard.writeText(text); alert('UPI copied to clipboard'); }
+      catch (e) { fallbackCopy(text); }
+    } else {
+      fallbackCopy(text);
+    }
+  });
+
+  function fallbackCopy(text){
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); alert('UPI copied to clipboard'); } catch (e) { alert('Copy failed — please long-press the UPI and copy manually'); }
+    ta.remove();
+  }
+} catch(e){ console.warn('UI helpers init failed', e); }
