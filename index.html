@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mines - Single Round (22 mines, 3 gems)</title>
+  <link rel="stylesheet" href="style.css?v=2">
+  <style>
+    /* Emphasized payment note shown next to UPI */
+    .pay-note{
+      margin:12px 0 8px 0;
+      padding:10px 12px;
+      background:linear-gradient(90deg,#ffefef,#fff5e6);
+      border:1px solid #ffb3b3;
+      color:#b30000;
+      font-weight:700;
+      font-size:18px;
+      border-radius:8px;
+      text-align:center;
+      box-shadow:0 2px 6px rgba(0,0,0,0.06);
+    }
+    @media (max-width:600px){
+      .pay-note{font-size:16px;padding:10px}
+    }
+    .small-note{font-size:13px;color:#bbb;margin-bottom:8px}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Mines — Find 3 Gems</h1>
+    <p class="subtitle">25 boxes • 22 mines • 3 gems • Single round</p>
+
+    <div id="auth-area" class="card">
+      <div id="auth-forms">
+        <div class="form">
+          <h3>Register</h3>
+          <input id="reg-user" placeholder="username">
+          <input id="reg-pass" type="password" placeholder="password">
+          <button id="btn-register">Create account</button>
+        </div>
+        <div class="form">
+          <h3>Login</h3>
+          <input id="login-user" placeholder="username">
+          <input id="login-pass" type="password" placeholder="password">
+          <button id="btn-login">Login</button>
+        </div>
+      </div>
+
+      <div id="player-area" style="display:none">
+        <div class="player-row">
+          <div>Player: <strong id="player-name"></strong></div>
+          <div>Credits: <strong id="player-credits">0</strong></div>
+          <button id="btn-logout" class="small">Logout</button>
+        </div>
+
+        <div class="purchase">
+          <input id="txid" placeholder="Enter transaction id to add 5 credits">
+          <button id="btn-add-credits">Add 5 credits</button>
+        </div>
+        
+
+          <!-- UPI QR Modal -->
+          <div id="qr-modal" class="modal" aria-hidden="true">
+            <div class="modal-content">
+              <button id="qr-close" class="modal-close">✕</button>
+              <h3>Pay using this UPI QR</h3>
+              <p class="hint">Screenshot this QR, pay using any UPI app, then paste the transaction id below.</p>
+              <div class="qr-wrap">
+                <div class="qr-col">
+                  <img id="upi-qr-img" src="assets/upi.png" alt="UPI QR (replace assets/upi.png with your QR)" onerror="this.style.display='none'">
+                </div>
+                <div class="upi-panel">
+                  <div class="upi-label">UPI ID</div>
+                  <div class="upi-id" id="upi-id">8618240399@naviaxis</div>
+                  <div class="pay-note">Pay only ₹5</div>
+                  <button id="copy-upi" class="copy-btn">Copy UPI</button>
+                  <div class="note">Screenshot the QR and pay using any UPI app.</div>
+                </div>
+              </div>
+              <input id="modal-txid" placeholder="Paste TransactionID here" class="tx-input">
+              <div class="small-note">Wrong or repeated TXIDs will be ignored.</div>
+              <div style="margin-top:8px;display:flex;gap:8px;">
+                <button id="modal-submit">Submit TXID</button>
+                <button id="modal-cancel">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+        <div class="status">
+          <div>Gems found this round: <span id="found">0</span>/3</div>
+          <div id="message"></div>
+        </div>
+
+        <div id="grid" class="grid" aria-label="Mines grid"></div>
+
+        <div class="controls">
+          <button id="start">Start Round (cost: 5 credits)</button>
+          <button id="restart" style="display:none">Restart</button>
+        </div>
+
+        <div class="redeem">
+          <h4>Redeem credits</h4>
+          <input id="redeem-email" placeholder="Enter your UPI ID">
+          <input id="redeem-amount" placeholder="Amount to redeem (min 25)" type="number" min="25">
+          <button id="btn-redeem">Redeem</button>
+          <div id="redeem-msg"></div>
+        </div>
+
+        <div class="history">
+          <h4>Redemptions</h4>
+          <ul id="redeem-list"></ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
