@@ -2,6 +2,9 @@
   --bg:#0f1724;
   --card:#0b1220;
   --accent:#06b6d4;
+  /* friendly success and accent-for-messages that match the dark theme */
+  --success:#16a34a; /* emerald green */
+  --gold:#f59e0b;    /* warm gold for submitted/notice messages */
   --danger:#ef4444;
   --text:#e6eef8;
 }
@@ -65,8 +68,11 @@ h1{margin:0 0 6px;font-size:20px}
 button{background:var(--accent);border:none;color:#032;padding:10px 16px;border-radius:10px;font-weight:700;cursor:pointer}
 button.small{padding:6px 10px;font-size:13px}
 button:active{transform:translateY(1px)}
-#message.win{color:var(--accent)}
+#message.win{color:var(--success)}
 #message.lose{color:var(--danger)}
+
+/* Redeem submission and small status messages */
+#redeem-msg{color:var(--gold);font-weight:600;margin-top:8px}
 
 @media (max-width:860px){
   main{padding:14px}
