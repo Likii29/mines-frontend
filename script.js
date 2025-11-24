@@ -352,8 +352,15 @@ function winRound() {
 
 function revealAll() {
   gridEl.querySelectorAll(".cell").forEach((c, i) => {
-    if (layout[i] === "mine") {
-      c.textContent = "💣";
+    const t = layout[i];
+    c.classList.add('revealed');
+    // ensure semantic class for styling (.mine / .gem)
+    if (t === 'mine') {
+      c.classList.add('mine');
+      c.textContent = '💣';
+    } else if (t === 'gem') {
+      c.classList.add('gem');
+      c.textContent = '💎';
     }
     c.disabled = true;
   });
