@@ -458,7 +458,17 @@ function shuffle(a) {
 
 startBtn.addEventListener("click", async () => {
   const u = currentUser();
-  
+  if (!u) {
+    alert("Session expired. Please log in again.");
+    return;
+  }
+
+  // Provide immediate UI feedback
+  startBtn.disabled = true;
+  const originalText = startBtn.textContent;
+  startBtn.textContent = "Starting...";
+  messageEl.textContent = "";
+
   try {
     const res = await fetch(`${backendBase}/api/user/${encodeURIComponent(u)}/debit`, {
       method: "POST",
@@ -469,14 +479,28 @@ startBtn.addEventListener("click", async () => {
       body: JSON.stringify({ amount: 5 }),
     });
 
-    const j = await res.json();
-    if (!j.ok) return alert(j.error);
-    
-    syncCreditsFromServer();
+    let j = {};
+    try { j = await res.json(); } catch { j = { ok: false, error: "Invalid server response" }; }
+
+    if (!j.ok) {
+      const errMsg = j.error || "Unable to start round";
+      messageEl.textContent = errMsg;
+      alert(errMsg);
+      startBtn.disabled = false;
+      startBtn.textContent = originalText;
+      return;
+    }
+
+    await syncCreditsFromServer();
     loadTransactionHistory(currentHistoryFilter);
     beginRound();
   } catch (e) {
-    alert("Failed to start round");
+    const errMsg = "Network error starting round. Please wait and retry.";
+    console.warn("Start round network error", e);
+    messageEl.textContent = errMsg;
+    alert("Failed to start round: " + (e.message || "network error"));
+    startBtn.disabled = false;
+    startBtn.textContent = originalText;
   }
 });
 
