@@ -26,12 +26,11 @@
   </style>
 </head>
 <body>
-  <main>
-    <h1>Mines — Find 3 Gems</h1>
-    <p class="subtitle">25 boxes • 22 mines • 3 gems • Single round</p>
-
-    <div id="auth-area" class="card">
-      <div id="auth-forms">
+  <!-- Auth Forms (shown when not logged in) -->
+  <div id="auth-forms" class="auth-container">
+    <div class="auth-card">
+      <h2>Mines — Find 3 Gems</h2>
+      <div class="auth-tabs">
         <div class="form">
           <h3>Register</h3>
           <input id="reg-user" placeholder="username">
@@ -45,74 +44,103 @@
           <button id="btn-login">Login</button>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div id="player-area" style="display:none">
-        <div class="player-row">
-          <div>Player: <strong id="player-name"></strong></div>
-          <div>Credits: <strong id="player-credits">0</strong></div>
-          <button id="btn-logout" class="small">Logout</button>
+  <!-- Main App (shown after login) -->
+  <div id="player-area" style="display:none">
+    <!-- Header Section -->
+    <header class="app-header">
+      <div class="header-title">
+        <h1>Mines — Find 3 Gems</h1>
+        <p class="subtitle">25 boxes • 22 mines • 3 gems</p>
+      </div>
+      <div class="header-user">
+        <div class="user-info">
+          <div class="user-name" id="player-name">Player</div>
+          <div class="user-balance">Balance: <strong id="player-credits">0</strong> credits</div>
         </div>
-
-        <div class="purchase">
-          <input id="txid" placeholder="Enter transaction id to add 5 credits">
-          <button id="btn-add-credits">Add 5 credits</button>
+        <div class="header-actions">
+          <button id="btn-deposit" class="action-btn deposit-btn">Deposit</button>
+          <button id="btn-withdraw" class="action-btn withdraw-btn">Withdraw</button>
+          <button id="btn-logout" class="action-btn logout-btn">Logout</button>
         </div>
-        
+      </div>
+    </header>
 
-          <!-- UPI QR Modal -->
-          <div id="qr-modal" class="modal" aria-hidden="true">
-            <div class="modal-content">
-              <button id="qr-close" class="modal-close">✕</button>
-              <h3>Pay using this UPI QR</h3>
-              <p class="hint">Screenshot this QR, pay using any UPI app, then paste the transaction id below.</p>
-              <div class="qr-wrap">
-                <div class="qr-col">
-                  <img id="upi-qr-img" src="assets/upi.png" alt="UPI QR (replace assets/upi.png with your QR)" onerror="this.style.display='none'">
-                </div>
-                <div class="upi-panel">
-                  <div class="upi-label">UPI ID</div>
-                  <div class="upi-id" id="upi-id">8618240399@naviaxis</div>
-                  <div class="pay-note">Pay only ₹5</div>
-                  <button id="copy-upi" class="copy-btn">Copy UPI</button>
-                  <div class="note">Screenshot the QR and pay using any UPI app.</div>
-                </div>
-              </div>
-              <input id="modal-txid" placeholder="Paste TransactionID here" class="tx-input">
-              <div class="small-note">Wrong or repeated TXIDs will be ignored.</div>
-              <div style="margin-top:8px;display:flex;gap:8px;">
-                <button id="modal-submit">Submit TXID</button>
-                <button id="modal-cancel">Cancel</button>
-              </div>
-            </div>
+    <!-- Main Game Area -->
+    <main class="game-area">
+      <div class="status">
+        <div>Gems found: <span id="found">0</span>/3</div>
+        <div id="message"></div>
+      </div>
+
+      <div id="grid" class="grid" aria-label="Mines grid"></div>
+
+      <div class="controls">
+        <button id="start">Start Round (cost: 5 credits)</button>
+        <button id="restart" style="display:none">Restart</button>
+      </div>
+    </main>
+
+    <!-- History Section -->
+    <section class="history-section">
+      <h3>Transaction History</h3>
+      <div class="history-tabs">
+        <button class="history-tab active" data-tab="all">All</button>
+        <button class="history-tab" data-tab="deposits">Deposits</button>
+        <button class="history-tab" data-tab="withdrawals">Withdrawals</button>
+        <button class="history-tab" data-tab="bets">Bets</button>
+      </div>
+      <div class="history-content">
+        <ul id="history-list" class="history-list"></ul>
+      </div>
+    </section>
+
+    <!-- Deposit Modal -->
+    <div id="deposit-modal" class="modal" aria-hidden="true">
+      <div class="modal-content">
+        <button class="modal-close" data-modal="deposit">✕</button>
+        <h3>Deposit Credits</h3>
+        <p class="hint">Screenshot this QR, pay using any UPI app, then paste the transaction id below.</p>
+        <div class="qr-wrap">
+          <div class="qr-col">
+            <img id="upi-qr-img" src="assets/upi.png" alt="UPI QR" onerror="this.style.display='none'">
           </div>
-
-        <div class="status">
-          <div>Gems found this round: <span id="found">0</span>/3</div>
-          <div id="message"></div>
+          <div class="upi-panel">
+            <div class="upi-label">UPI ID</div>
+            <div class="upi-id" id="upi-id">8618240399@naviaxis</div>
+            <div class="pay-note">Pay only ₹5</div>
+            <button id="copy-upi" class="copy-btn">Copy UPI</button>
+          </div>
         </div>
-
-        <div id="grid" class="grid" aria-label="Mines grid"></div>
-
-        <div class="controls">
-          <button id="start">Start Round (cost: 5 credits)</button>
-          <button id="restart" style="display:none">Restart</button>
-        </div>
-
-        <div class="redeem">
-          <h4>Redeem credits</h4>
-          <input id="redeem-email" placeholder="Enter your UPI ID">
-          <input id="redeem-amount" placeholder="Amount to redeem (min 25)" type="number" min="25">
-          <button id="btn-redeem">Redeem</button>
-          <div id="redeem-msg"></div>
-        </div>
-
-        <div class="history">
-          <h4>Redemptions</h4>
-          <ul id="redeem-list"></ul>
+        <input id="deposit-txid" placeholder="Paste TransactionID here" class="tx-input">
+        <div class="small-note">Wrong or repeated TXIDs will be ignored.</div>
+        <div style="margin-top:8px;display:flex;gap:8px;">
+          <button id="deposit-submit">Submit TXID</button>
+          <button class="modal-cancel" data-modal="deposit">Cancel</button>
         </div>
       </div>
     </div>
-  </main>
+
+    <!-- Withdraw Modal -->
+    <div id="withdraw-modal" class="modal" aria-hidden="true">
+      <div class="modal-content">
+        <button class="modal-close" data-modal="withdraw">✕</button>
+        <h3>Withdraw Credits</h3>
+        <p class="hint">Enter your UPI ID and the amount you want to withdraw (minimum 25 credits).</p>
+        <input id="withdraw-upi" placeholder="Your UPI ID" class="tx-input">
+        <input id="withdraw-amount" placeholder="Amount (min 25)" type="number" min="25" class="tx-input">
+        <div id="withdraw-msg" class="modal-msg"></div>
+        <div style="margin-top:8px;display:flex;gap:8px;">
+          <button id="withdraw-submit">Submit Request</button>
+          <button class="modal-cancel" data-modal="withdraw">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main>
 
   <script src="script.js"></script>
 </body>
