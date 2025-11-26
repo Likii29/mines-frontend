@@ -30,7 +30,52 @@ const btnWithdraw = document.getElementById("btn-withdraw");
 // UI ELEMENTS - Game
 const gridEl = document.getElementById("grid");
 const foundEl = document.getElementById("found");
-const messageEl = document.getElementById("message");
+let messageEl = document.getElementById("message");
+// Fallback: if message element was removed from HTML, recreate it so
+// start round logic does not crash with "Cannot set properties of null".
+if (!messageEl) {
+  messageEl = document.createElement('div');
+  messageEl.id = 'message';
+  // Prefer existing .status container
+  const statusContainer = document.querySelector('.status');
+  if (statusContainer) {
+    statusContainer.appendChild(messageEl);
+  } else {
+    // Create a status wrapper if missing
+    const gameArea = document.querySelector('.game-area');
+    if (gameArea) {
+      const statusDiv = document.createElement('div');
+      statusDiv.className = 'status';
+      statusDiv.appendChild(messageEl);
+      gameArea.insertBefore(statusDiv, gameArea.firstChild);
+    }
+  }
+}
+
+// Central helper: always obtain a valid message element
+function ensureMessageEl() {
+  if (messageEl && messageEl instanceof HTMLElement) return messageEl;
+  messageEl = document.getElementById('message');
+  if (!messageEl) {
+    const statusContainer = document.querySelector('.status');
+    if (statusContainer) {
+      messageEl = document.createElement('div');
+      messageEl.id = 'message';
+      statusContainer.appendChild(messageEl);
+    } else {
+      const gameArea = document.querySelector('.game-area');
+      if (gameArea) {
+        const statusDiv = document.createElement('div');
+        statusDiv.className = 'status';
+        messageEl = document.createElement('div');
+        messageEl.id = 'message';
+        statusDiv.appendChild(messageEl);
+        gameArea.insertBefore(statusDiv, gameArea.firstChild);
+      }
+    }
+  }
+  return messageEl;
+}
 const startBtn = document.getElementById("start");
 const restartBtn = document.getElementById("restart");
 
@@ -467,7 +512,7 @@ startBtn.addEventListener("click", async () => {
   startBtn.disabled = true;
   const originalText = startBtn.textContent;
   startBtn.textContent = "Starting...";
-  messageEl.textContent = "";
+  ensureMessageEl().textContent = "";
 
   try {
     const res = await fetch(`${backendBase}/api/user/${encodeURIComponent(u)}/debit`, {
@@ -484,7 +529,7 @@ startBtn.addEventListener("click", async () => {
 
     if (!j.ok) {
       const errMsg = j.error || "Unable to start round";
-      messageEl.textContent = errMsg;
+      ensureMessageEl().textContent = errMsg;
       alert(errMsg);
       startBtn.disabled = false;
       startBtn.textContent = originalText;
@@ -497,7 +542,7 @@ startBtn.addEventListener("click", async () => {
   } catch (e) {
     const errMsg = "Network error starting round. Please wait and retry.";
     console.warn("Start round network error", e);
-    messageEl.textContent = errMsg;
+    ensureMessageEl().textContent = errMsg;
     alert("Failed to start round: " + (e.message || "network error"));
     startBtn.disabled = false;
     startBtn.textContent = originalText;
@@ -509,7 +554,7 @@ restartBtn.addEventListener("click", resetRoundUI);
 function beginRound() {
   found = 0;
   roundActive = true;
-  messageEl.textContent = "";
+  ensureMessageEl().textContent = "";
   messageEl.className = "";
   layout = shuffle(Array(MINES).fill("mine").concat(Array(GEMS).fill("gem")));
 
@@ -523,7 +568,7 @@ function resetRoundUI() {
   startBtn.disabled = false;
   restartBtn.style.display = "none";
   foundEl.textContent = "0";
-  messageEl.textContent = "";
+  ensureMessageEl().textContent = "";
   messageEl.className = "";
 }
 
@@ -567,7 +612,7 @@ function onCellClick(e) {
 
 function loseRound() {
   roundActive = false;
-  messageEl.textContent = "Game Over!";
+  ensureMessageEl().textContent = "Game Over!";
   messageEl.className = "lose";
   revealAll();
   startBtn.disabled = false;
@@ -575,7 +620,7 @@ function loseRound() {
 
 async function winRound() {
   roundActive = false;
-  messageEl.textContent = "YOU WIN +25 CREDITS!";
+  ensureMessageEl().textContent = "YOU WIN +25 CREDITS!";
   messageEl.className = "win";
 
   const u = currentUser();
