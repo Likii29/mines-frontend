@@ -567,14 +567,14 @@ function resetRoundUI() {
   gridEl.innerHTML = "";
   startBtn.disabled = false;
   restartBtn.style.display = "none";
-  foundEl.textContent = "0";
+  if (typeof foundEl !== 'undefined' && foundEl) foundEl.textContent = "0";
   ensureMessageEl().textContent = "";
   messageEl.className = "";
 }
 
 function renderGrid() {
   gridEl.innerHTML = "";
-  foundEl.textContent = "0";
+  if (typeof foundEl !== 'undefined' && foundEl) foundEl.textContent = "0";
   
   for (let i = 0; i < TOTAL; i++) {
     const cell = document.createElement("button");
@@ -603,7 +603,7 @@ function onCellClick(e) {
     btn.textContent = "💎";
     btn.classList.add("gem");
     found++;
-    foundEl.textContent = found;
+    if (typeof foundEl !== 'undefined' && foundEl) foundEl.textContent = found;
     
     // Win immediately upon finding any gem
     winRound();
