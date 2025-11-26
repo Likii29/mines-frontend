@@ -77,7 +77,7 @@ function ensureMessageEl() {
   return messageEl;
 }
 const startBtn = document.getElementById("start");
-const restartBtn = document.getElementById("restart");
+const START_LABEL = "Start Round (cost: 5 credits)";
 
 // UI ELEMENTS - Deposit Modal
 const depositModal = document.getElementById("deposit-modal");
@@ -549,7 +549,7 @@ startBtn.addEventListener("click", async () => {
   }
 });
 
-restartBtn.addEventListener("click", resetRoundUI);
+// No restart button anymore
 
 function beginRound() {
   found = 0;
@@ -559,14 +559,14 @@ function beginRound() {
   layout = shuffle(Array(MINES).fill("mine").concat(Array(GEMS).fill("gem")));
 
   renderGrid();
-  startBtn.disabled = true;
-  restartBtn.style.display = "inline-block";
+  // Hide start button during an active round
+  startBtn.style.display = "none";
+  startBtn.disabled = false; // reset for next time it's shown
 }
 
 function resetRoundUI() {
   gridEl.innerHTML = "";
   startBtn.disabled = false;
-  restartBtn.style.display = "none";
   if (typeof foundEl !== 'undefined' && foundEl) foundEl.textContent = "0";
   ensureMessageEl().textContent = "";
   messageEl.className = "";
@@ -615,7 +615,10 @@ function loseRound() {
   ensureMessageEl().textContent = "Game Over!";
   messageEl.className = "lose";
   revealAll();
+  // Show start button again after round ends
+  startBtn.style.display = "inline-block";
   startBtn.disabled = false;
+  startBtn.textContent = START_LABEL;
 }
 
 async function winRound() {
@@ -642,7 +645,9 @@ async function winRound() {
   }
 
   revealAll();
+  startBtn.style.display = "inline-block";
   startBtn.disabled = false;
+  startBtn.textContent = START_LABEL;
 }
 
 function revealAll() {
